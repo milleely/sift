@@ -1,0 +1,36 @@
+/* Sift button — styled to blend with LinkedIn's action bar */
+
+.sift-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: #6B6B6B;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 150ms ease, color 150ms ease;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sift-btn:hover {
+  background: #EBF1FD;
+  color: #2E6BE6;
+}
+
+.sift-btn--active {
+  color: #2E6BE6;
+}
+
+.sift-btn__label {
+  pointer-events: none;
+}
+
+.sift-btn svg {
+  flex-shrink: 0;
+}

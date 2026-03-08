@@ -1,0 +1,27 @@
+{
+  "name": "sift",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "LinkedIn comment copilot Chrome extension",
+  "scripts": {
+    "build:pages": "vite build --config vite.config.pages.js",
+    "build:scripts": "vite build --config vite.config.scripts.js",
+    "build:copy": "cp -r public/manifest.json dist/ && cp -r public/icons dist/ && cp src/content/content.js dist/ && cp src/content/content.css dist/",
+    "build": "npm run build:pages && npm run build:scripts && npm run build:copy",
+    "dev:pages": "vite build --config vite.config.pages.js --watch",
+    "dev:scripts": "vite build --config vite.config.scripts.js --watch"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.7"
+  }
+}
