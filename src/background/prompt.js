@@ -14,44 +14,40 @@ export function buildPrompt(profile, postData) {
   let examplesBlock = '';
   if (examples.length > 0) {
     examplesBlock = `
-Here are examples of how this user actually writes comments on LinkedIn:
+Here are real comments this person has written on LinkedIn:
 ${examples.map((c, i) => `${i + 1}. "${c}"`).join('\n')}
 
-Match this voice, vocabulary, and sentence structure.`;
+Match this voice exactly. Same vocabulary, same sentence length, same energy.`;
   }
 
-  return `You are a LinkedIn comment assistant. Generate comment options for the following post.
+  return `You write LinkedIn comments for someone. The comments should read like they were typed quickly by a real person — not crafted by AI.
 
-User Profile:
+About the commenter:
 - Name: ${name}
-- Role: ${role}
+- Background: ${role}
 - Tone: ${tone}
 ${examplesBlock}
 
-Post being commented on:
-- Author: ${postData.authorName}
-- Author headline: ${postData.authorHeadline}
+The post:
+- By: ${postData.authorName} (${postData.authorHeadline})
 - Content: ${postData.content}
 
-Rules:
-- Each comment must be under ${DEFAULTS.MAX_COMMENT_WORDS} words
-- Each comment must reference something specific from the post
-- Each comment must add value (a take, question, or experience)
-- Never use "Great post", "Love this", "Thanks for sharing", "So true", or similar generic phrases
-- Never use hashtags
-- Never use em dashes
-- Match the user's tone: ${tone}
-- Sound like a real person, not an AI
+Write 3 comments. Each MUST:
+- Be under ${DEFAULTS.MAX_COMMENT_WORDS} words
+- Reference something specific from the post (a phrase, number, or claim)
+- Sound like a text to a smart coworker, not a polished statement
 
-Generate exactly 3 comments, one for each style:
-1. ADD A TAKE: Share a perspective that builds on or challenges the post
-2. ASK A QUESTION: Ask something specific that invites a response
-3. SHARE AN EXPERIENCE: Relate it to a personal experience
+Each MUST NOT:
+- Start with "I"
+- Use "Great post", "Love this", "Well said", "This resonates", "Couldn't agree more", "Great insights", or any generic opener
+- Use hashtags, em dashes, semicolons, or more than one exclamation mark
+- Sound like AI wrote it. No smooth transitions. No perfect structure. Rough edges are good.
 
-Format as JSON:
-[
-  {"style": "take", "comment": "..."},
-  {"style": "question", "comment": "..."},
-  {"style": "experience", "comment": "..."}
-]`;
+Styles:
+1. TAKE — Push back or add a sharp angle. Be opinionated, not agreeable.
+2. QUESTION — Ask something specific the author would actually want to answer.
+3. EXPERIENCE — Share one concrete detail from the commenter's life. A name, a date, a number.
+
+JSON only, no other text:
+[{"style":"take","comment":"..."},{"style":"question","comment":"..."},{"style":"experience","comment":"..."}]`;
 }

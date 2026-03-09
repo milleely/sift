@@ -40,6 +40,25 @@ function isSponsored(postContainer) {
   return sub.textContent.trim().toLowerCase().includes('promoted');
 }
 
+function cleanAuthorName(raw) {
+  return raw
+    .replace(/\s*[\·\•·]\s*(1st|2nd|3rd)\+?\s*/g, '')
+    .replace(/\b(1st|2nd|3rd)\+?\b/g, '')
+    .replace(/Verified/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function cleanHeadline(raw) {
+  const trimmed = raw.replace(/\s+/g, ' ').trim();
+  // LinkedIn sometimes renders headline twice for accessibility — deduplicate
+  const mid = Math.floor(trimmed.length / 2);
+  if (trimmed.length > 20 && trimmed.slice(0, mid).trim() === trimmed.slice(mid).trim()) {
+    return trimmed.slice(0, mid).trim();
+  }
+  return trimmed;
+}
+
 function extractPostData(postContainer) {
   if (!postContainer) return null;
 
@@ -47,8 +66,8 @@ function extractPostData(postContainer) {
   const headlineEl = postContainer.querySelector(SELECTORS.authorHeadline);
   const contentEl = postContainer.querySelector(SELECTORS.postContent);
 
-  const authorName = nameEl ? nameEl.innerText.trim() : '';
-  const authorHeadline = headlineEl ? headlineEl.innerText.trim() : '';
+  const authorName = nameEl ? cleanAuthorName(nameEl.innerText) : '';
+  const authorHeadline = headlineEl ? cleanHeadline(headlineEl.innerText) : '';
   const content = contentEl ? contentEl.innerText.trim() : '';
 
   if (!content) return null;

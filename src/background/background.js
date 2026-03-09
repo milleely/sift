@@ -16,16 +16,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.sidePanel.open({ tabId });
   }
 
-  // Async work: store post data, call API, relay results
+  // Async work: store post data, call API, write results to session storage
   (async () => {
     try {
-      // Write post data to session storage so sidepanel can read on mount
+      // Write post data + clear previous results so sidepanel shows loading
       await setSession(STORAGE_KEYS.CURRENT_POST, message.postData);
+      await setSession(STORAGE_KEYS.COMMENTS_RESULT, null);
 
       const apiKey = await getLocal(STORAGE_KEYS.API_KEY);
       if (!apiKey) {
-        chrome.runtime.sendMessage({
-          type: MSG.COMMENTS_ERROR,
+        await setSession(STORAGE_KEYS.COMMENTS_RESULT, {
           error: 'No API key configured. Open Sift settings to add your Claude API key.',
         });
         return;
@@ -35,15 +35,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const prompt = buildPrompt(profile, message.postData);
       const comments = await generateComments(apiKey, prompt);
 
-      chrome.runtime.sendMessage({ type: MSG.COMMENTS_READY, comments });
+      await setSession(STORAGE_KEYS.COMMENTS_RESULT, { comments });
     } catch (err) {
-      chrome.runtime.sendMessage({
-        type: MSG.COMMENTS_ERROR,
+      await setSession(STORAGE_KEYS.COMMENTS_RESULT, {
         error: err.message || 'Something went wrong. Try again.',
       });
     }
   })();
 
-  // Return true to indicate async response handling
   return true;
 });
