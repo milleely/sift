@@ -11,9 +11,11 @@ const SELECTORS = {
 
 const SIFT_ATTR = 'data-sift-injected';
 
-// ─── SIFT BUTTON SVG ICON ───────────────────────────────────
-const SIFT_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M8 1L10 5.5L15 6.5L11.5 10L12.5 15L8 12.5L3.5 15L4.5 10L1 6.5L6 5.5L8 1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+// ─── SIFT BUTTON SVG ICON (sparkles) ────────────────────────
+const SIFT_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 2L13.5 7.5L19 9L13.5 10.5L12 16L10.5 10.5L5 9L10.5 7.5L12 2Z" fill="currentColor"/>
+  <path d="M19 14L19.75 16.25L22 17L19.75 17.75L19 20L18.25 17.75L16 17L18.25 16.25L19 14Z" fill="currentColor"/>
+  <path d="M5 14L5.5 15.5L7 16L5.5 16.5L5 18L4.5 16.5L3 16L4.5 15.5L5 14Z" fill="currentColor"/>
 </svg>`;
 
 // ─── HELPERS ─────────────────────────────────────────────────

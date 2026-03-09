@@ -1,26 +1,28 @@
-/* Sift button — styled to blend with LinkedIn's action bar */
+/* Sift button — vertical stack to match LinkedIn's Like/Comment/Repost/Send */
 
 .sift-btn {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 2px;
   padding: 8px 12px;
   border: none;
   background: transparent;
-  color: #6B6B6B;
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 4px;
   transition: background 150ms ease, color 150ms ease;
   line-height: 1;
   white-space: nowrap;
 }
 
 .sift-btn:hover {
-  background: #EBF1FD;
-  color: #2E6BE6;
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.9);
 }
 
 .sift-btn--active {

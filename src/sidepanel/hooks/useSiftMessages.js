@@ -7,6 +7,25 @@ export function useSiftMessages() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // On mount: check if a generation is already in flight
+    chrome.storage.session.get(
+      [STORAGE_KEYS.CURRENT_POST, STORAGE_KEYS.COMMENTS_RESULT],
+      (result) => {
+        const post = result[STORAGE_KEYS.CURRENT_POST];
+        const commentsResult = result[STORAGE_KEYS.COMMENTS_RESULT];
+
+        if (commentsResult?.comments) {
+          setComments(commentsResult.comments);
+        } else if (commentsResult?.error) {
+          setError(commentsResult.error);
+        } else if (post) {
+          // Post exists but no result yet — generation in flight
+          setIsLoading(true);
+        }
+      }
+    );
+
+    // Live updates for subsequent interactions
     const listener = (changes, area) => {
       if (area !== 'session') return;
 
