@@ -19,7 +19,7 @@ export default function App() {
       </div>
 
       {/* States */}
-      {!postData && !isLoading && !comments && <WelcomeState />}
+      {!isLoading && !comments && !error && <WelcomeState />}
 
       {isLoading && <LoadingState postData={postData} />}
 
