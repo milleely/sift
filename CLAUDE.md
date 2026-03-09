@@ -9,6 +9,7 @@ npm run build          # Full build: pages → scripts → copy static assets to
 npm run build:pages    # Vite build for React pages (sidepanel + settings)
 npm run build:scripts  # Vite build for background service worker (IIFE bundle)
 npm run build:copy     # Copies manifest.json, icons, content.js, content.css to dist/
+node scripts/generate-icons.js  # Regenerate extension icons (requires sharp)
 ```
 
 After building, load `dist/` as an unpacked extension at `chrome://extensions` (enable Developer mode).
@@ -23,9 +24,9 @@ Sift is a Manifest V3 Chrome extension that adds a "Sift" button to LinkedIn pos
 
 1. **Content script** (`src/content/content.js`) — Plain JS, no build step (copied directly to dist). Injects the Sift button into LinkedIn's DOM and extracts post data on click. All LinkedIn DOM selectors live in the `SELECTORS` object at the top of this file — this is the single place to update when LinkedIn changes markup.
 
-2. **Background service worker** (`src/background/background.js`) — Plain JS, bundled as IIFE via Vite. Receives messages from the content script, calls the Claude API, and relays results. **Critical**: `chrome.sidePanel.open()` must be called synchronously in the `onMessage` callback before any `await` to preserve the user gesture chain.
+2. **Background service worker** (`src/background/background.js`) — Plain JS, bundled as IIFE via Vite. Receives messages from the content script, calls the Claude API, and writes results to session storage. **Critical**: `chrome.sidePanel.open()` must be called synchronously in the `onMessage` callback before any `await` to preserve the user gesture chain.
 
-3. **Sidepanel** (`src/sidepanel/`) — React + Tailwind. Displays comment suggestions. Reads initial post data from `chrome.storage.session` on mount (avoids race condition with panel not being ready when message is sent), then listens for `chrome.runtime.onMessage` for results.
+3. **Sidepanel** (`src/sidepanel/`) — React + Tailwind. Displays comment suggestions. Reads initial state from `chrome.storage.session` on mount (catches in-flight generations), then listens for storage changes for live updates.
 
 4. **Settings page** (`src/settings/`) — React + Tailwind. Saves user profile, tone preference, example comments, and API key to `chrome.storage.local`.
 
@@ -34,10 +35,10 @@ Sift is a Manifest V3 Chrome extension that adds a "Sift" button to LinkedIn pos
 ```
 Content Script → sendMessage({SIFT_CLICKED, postData}) → Background
 Background → sidePanel.open() (sync) → storage.session.set(postData) → Claude API
-Background → sendMessage({COMMENTS_READY, comments}) → Sidepanel
+Background → storage.session.set({comments}) → Sidepanel reads via onChanged
 ```
 
-The handoff uses `chrome.storage.session` as a buffer because the sidepanel's React app may not have mounted its message listener yet when `sidePanel.open()` is called.
+All background→sidepanel communication uses `chrome.storage.session` (not `sendMessage`) to avoid "Receiving end does not exist" errors when the panel hasn't mounted yet.
 
 ### Build System
 
@@ -53,6 +54,13 @@ Two Vite configs handle different output requirements:
 ## Design Tokens
 
 All styling uses design tokens from `docs/BRAND.md`, mapped into `tailwind.config.js` as custom theme values. Use Tailwind classes like `bg-primary`, `text-text-secondary`, `rounded-card`, `shadow-card`, `p-card-pad`. Font is DM Sans loaded from Google Fonts. Icons use `lucide-react` in React components, inline SVG in the content script.
+
+## Anthropic API
+
+- Requires `anthropic-dangerous-direct-browser-access: true` header for browser-based requests
+- `https://api.anthropic.com/*` must be in manifest `host_permissions`
+- Adding new host_permissions requires extension removal + re-add (not just refresh)
+- Model: `claude-sonnet-4-5-20250929` (configured in `DEFAULTS.MODEL`)
 
 ## Hard Rules
 
